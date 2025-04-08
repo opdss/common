@@ -12,6 +12,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.33.18
 	github.com/gabriel-vasile/mimetype v1.4.5
 	github.com/gin-gonic/gin v1.10.0
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/uuid v1.6.0
 	github.com/opdss/version v0.0.2
 	github.com/redis/go-redis/v9 v9.7.3
