@@ -2,7 +2,7 @@ package app
 
 import (
 	"context"
-	"github.com/opdss/common/server"
+	"github.com/opdss/common/contracts/server"
 	"log"
 	"os"
 	"os/signal"

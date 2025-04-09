@@ -64,10 +64,7 @@ func TestBind(t *testing.T) {
 		"--uint64=1",
 		"--uint=1",
 		"--float64=1",
-		"--size=1MiB",
 		"--duration=1h",
-		"--node-url=12EayRS2V1kEsWESU9QMRseFhdxYxKicsiFmxrsLZHeLUtdps3S@mars.tardigrade.io:7777",
-		"--node-ur-ls=12EayRS2V1kEsWESU9QMRseFhdxYxKicsiFmxrsLZHeLUtdps3S@mars.tardigrade.io:7777,12L9ZFwhzVpuEKMUNUqkaTLGzwY9G24tbiigLiXpmZWKwmcNDDs@jupiter.tardigrade.io:7777",
 		"--struct.another-string=1",
 		"--fields.03.another-int=1"})
 	if err != nil {
@@ -132,8 +129,6 @@ func TestBindDevDefaults(t *testing.T) {
 		"--uint=1",
 		"--float64=1",
 		"--duration=1h",
-		"--node-url=121RTSDpyNZVcEU84Ticf2L1ntiuUimbWgfATz21tuvgk3vzoA6@saturn.tardigrade.io:7777",
-		"--node-ur-ls=121RTSDpyNZVcEU84Ticf2L1ntiuUimbWgfATz21tuvgk3vzoA6@saturn.tardigrade.io:7777",
 		"--struct.another-string=1",
 		"--fields.03.another-int=1"})
 	if err != nil {
@@ -253,8 +248,6 @@ func TestBindTestDefaults(t *testing.T) {
 		"--uint=1",
 		"--float64=1",
 		"--duration=1h",
-		"--node-url=121RTSDpyNZVcEU84Ticf2L1ntiuUimbWgfATz21tuvgk3vzoA6@saturn.tardigrade.io:7777",
-		"--node-ur-ls=121RTSDpyNZVcEU84Ticf2L1ntiuUimbWgfATz21tuvgk3vzoA6@saturn.tardigrade.io:7777",
 		"--struct.another-string=1",
 		"--fields.03.another-int=1"})
 	if err != nil {

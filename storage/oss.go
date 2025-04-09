@@ -12,7 +12,6 @@ import (
 
 	"github.com/zeebo/errs"
 
-	"github.com/aliyun/alibaba-cloud-sdk-go/services/sts"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 )
 
@@ -39,7 +38,6 @@ var _ storage.FileSystem = (*Oss)(nil)
 type Oss struct {
 	config         OssConfig
 	bucketInstance *oss.Bucket
-	stsClient      *sts.Client
 }
 
 func NewOss(config OssConfig) (*Oss, error) {
@@ -61,16 +59,9 @@ func NewOss(config OssConfig) (*Oss, error) {
 		config.Url = config.Endpoint
 	}
 	config.Url = strings.TrimSuffix(config.Url, "/")
-
-	stsClient, err := sts.NewClientWithAccessKey(config.RegionId, config.AccessKeyId, config.AccessKeySecret)
-	if err != nil {
-		return nil, ErrOss.Wrap(err)
-	}
-
 	return &Oss{
 		config:         config,
 		bucketInstance: bucketInstance,
-		stsClient:      stsClient,
 	}, nil
 }
 
@@ -89,7 +80,7 @@ func (r *Oss) ListObjects(ctx context.Context, opt *storage.ListObjectOpts) (*st
 	res.HasMore = listObjsResponse.IsTruncated
 	for _, object := range listObjsResponse.Objects {
 		if object.Type == "Symlink" {
-			res.List = append(res.List, ListObject{
+			res.List = append(res.List, storage.ListObject{
 				Name:  strings.Trim(strings.ReplaceAll(object.Key, vPath, ""), "/"),
 				IsDir: true,
 			})
@@ -98,7 +89,7 @@ func (r *Oss) ListObjects(ctx context.Context, opt *storage.ListObjectOpts) (*st
 			if file == "" {
 				continue
 			}
-			res.List = append(res.List, ListObject{
+			res.List = append(res.List, storage.ListObject{
 				Name:         file,
 				IsDir:        false,
 				Size:         object.Size,
@@ -163,7 +154,7 @@ func (r *Oss) DeleteDirectory(ctx context.Context, directory string) error {
 func (r *Oss) Directories(ctx context.Context, path string) ([]string, error) {
 	var directories []string
 	vPath := validPath(path)
-	lsRes, err := r.bucketInstance.ListObjectsV2(oss.MaxKeys(MaxFileNum), oss.Prefix(vPath), oss.Delimiter("/"))
+	lsRes, err := r.bucketInstance.ListObjectsV2(oss.MaxKeys(storage.MaxFileNum), oss.Prefix(vPath), oss.Delimiter("/"))
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +175,7 @@ func (r *Oss) Exists(ctx context.Context, file string) bool {
 func (r *Oss) Files(ctx context.Context, path string) ([]string, error) {
 	var files []string
 	vPath := validPath(path)
-	lsRes, err := r.bucketInstance.ListObjectsV2(oss.MaxKeys(MaxFileNum), oss.Prefix(vPath), oss.Delimiter("/"))
+	lsRes, err := r.bucketInstance.ListObjectsV2(oss.MaxKeys(storage.MaxFileNum), oss.Prefix(vPath), oss.Delimiter("/"))
 	if err != nil {
 		return nil, err
 	}

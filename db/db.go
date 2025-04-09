@@ -5,7 +5,6 @@ import (
 	"go.uber.org/zap"
 	"time"
 
-	"github.com/zeebo/errs"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -17,8 +16,6 @@ const Mysql = "mysql"
 const Postgresql = "postgres"
 
 const Sqlite3 = "sqlite3"
-
-var ErrDB = errs.Class("DB")
 
 type Config struct {
 	Driver string `help:"数据库驱动" default:"sqlite3"`
@@ -55,22 +52,10 @@ func (conf *Config) Dialector() (dial gorm.Dialector, err error) {
 	return
 }
 
-//	func NewDB(cfg *Config, zapLog *zap.Logger) (*gorm.DB, error) {
-//		dail, err := cfg.Dialector()
-//		if err != nil {
-//			return nil, ErrDB.Wrap(err)
-//		}
-//		db, err := gorm.Open(dail, &gorm.Config{
-//			DisableForeignKeyConstraintWhenMigrating: true,
-//			SkipDefaultTransaction:                   true,
-//			Logger:                                   getLogInterface(zapLog, cfg.LogLevel),
-//		})
-//		return db, err
-//	}
 func NewDB(zapLog *zap.Logger, cfg Config) (*gorm.DB, error) {
 	dail, err := cfg.Dialector()
 	if err != nil {
-		return nil, ErrDB.Wrap(err)
+		return nil, err
 	}
 	db, err := gorm.Open(dail, &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,

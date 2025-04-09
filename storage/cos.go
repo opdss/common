@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/opdss/common/contracts/storage"
+	"github.com/tencentyun/cos-go-sdk-v5"
 	"github.com/zeebo/errs"
 )
 

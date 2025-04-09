@@ -1,19 +1,18 @@
-package jwt_test
+package jwt
 
 import (
 	"fmt"
 	"testing"
 	"time"
-	"wapoker/pkg/jwt"
 )
 
 func TestJwt(t *testing.T) {
-	j := jwt.NewJwt(jwt.Config{
+	j := NewJwt(Config{
 		TokenExpire:        time.Second * 600,
 		RefreshTokenExpire: time.Second * 6000,
 		Key:                "afweaf",
 	})
-	s, ts, err := j.CreateToken(jwt.TokenPayload{
+	s, ts, err := j.CreateToken(TokenPayload{
 		UserId:   23,
 		Username: "fwafwef",
 	})
