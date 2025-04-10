@@ -12,10 +12,7 @@ import (
 	"time"
 
 	"github.com/opdss/common/contracts/storage"
-	"github.com/zeebo/errs"
 )
-
-var ErrLocal = errs.Class("storage.local")
 
 type LocalConfig struct {
 	Endpoint string `help:"访问地址" default:"http://localhost" json:"endpoint"`

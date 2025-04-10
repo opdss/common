@@ -3,6 +3,7 @@ package storage
 import (
 	"bytes"
 	"context"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -12,15 +13,12 @@ import (
 
 	"github.com/opdss/common/contracts/storage"
 	"github.com/tencentyun/cos-go-sdk-v5"
-	"github.com/zeebo/errs"
 )
 
 /*
 * Cos COS
 * Document: https://cloud.tencent.com/document/product/436/31215
  */
-var ErrCos = errs.Class("storage.cos")
-
 type CosConfig struct {
 	AccessKeyId     string `help:"accessKeyId" default:""  json:"access_key_id""`
 	AccessKeySecret string `help:"accessKeySecret" default:""  json:"access_key_secret"`
@@ -38,12 +36,12 @@ type Cos struct {
 
 func NewCos(config CosConfig) (*Cos, error) {
 	if config.AccessKeyId == "" || config.AccessKeySecret == "" || config.Endpoint == "" {
-		return nil, ErrCos.New("please set configuration")
+		return nil, errors.New("please set configuration")
 	}
 
 	u, err := url.Parse(config.Endpoint)
 	if err != nil {
-		return nil, ErrCos.Wrap(err)
+		return nil, err
 	}
 
 	b := &cos.BaseURL{BucketURL: u}

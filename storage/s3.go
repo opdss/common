@@ -3,6 +3,7 @@ package storage
 import (
 	"bytes"
 	"context"
+	"errors"
 	"github.com/opdss/common/contracts/storage"
 	"io"
 	"path/filepath"
@@ -13,9 +14,6 @@ import (
 	awsConfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/sts"
-	"github.com/zeebo/errs"
-
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/gabriel-vasile/mimetype"
 )
@@ -25,8 +23,6 @@ import (
 * Document: https://github.com/awsdocs/aws-doc-sdk-examples/blob/main/gov2/s3
 * More: https://aws.github.io/aws-sdk-go-v2/docs/sdk-utilities/s3/#putobjectinput-body-field-ioreadseeker-vs-ioreader
  */
-
-var ErrS3 = errs.Class("storage.s3")
 
 type S3Config struct {
 	AccessKeyId     string `help:"accessKeyId" default:""`
@@ -41,15 +37,13 @@ type S3Config struct {
 var _ storage.FileSystem = (*S3)(nil)
 
 type S3 struct {
-	config        S3Config
-	instance      *s3.Client
-	stsClient     *sts.Client
-	presignClient *s3.PresignClient
+	config   S3Config
+	instance *s3.Client
 }
 
 func NewS3(config S3Config) (*S3, error) {
 	if config.AccessKeyId == "" || config.AccessKeySecret == "" || config.Endpoint == "" {
-		return nil, ErrS3.New("please set configuration")
+		return nil, errors.New("please set configuration")
 	}
 
 	r2Resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
@@ -64,19 +58,6 @@ func NewS3(config S3Config) (*S3, error) {
 		awsConfig.WithRegion(config.Region),
 	)
 
-	cfgSts, _ := awsConfig.LoadDefaultConfig(context.TODO(),
-		awsConfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(config.AccessKeyId, config.AccessKeySecret, "")),
-		awsConfig.WithRegion(config.Region),
-	)
-
-	cfgTmp, _ := awsConfig.LoadDefaultConfig(context.TODO(),
-		awsConfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(config.AccessKeyId, config.AccessKeySecret, "")),
-		awsConfig.WithRegion("eu-central-1"),
-	)
-	// if err != nil {
-	// 	return nil, ErrS3.Wrap(err)
-	// }
-
 	if config.Url == "" {
 		config.Url = config.Endpoint
 	}
@@ -86,9 +67,7 @@ func NewS3(config S3Config) (*S3, error) {
 	return &S3{
 		config: config,
 		//instance: client,
-		instance:      client,
-		stsClient:     sts.NewFromConfig(cfgSts),
-		presignClient: s3.NewPresignClient(s3.NewFromConfig(cfgTmp)),
+		instance: client,
 	}, nil
 }
 

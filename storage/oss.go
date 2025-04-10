@@ -3,6 +3,7 @@ package storage
 import (
 	"bytes"
 	"context"
+	"errors"
 	"github.com/opdss/common/contracts/storage"
 	"io"
 	"net/http"
@@ -10,12 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zeebo/errs"
-
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 )
-
-var ErrOss = errs.Class("storage.oss")
 
 type OssConfig struct {
 	AccessKeyId     string `help:"accessKeyId" default:""  json:"access_key_id""`
@@ -42,17 +39,17 @@ type Oss struct {
 
 func NewOss(config OssConfig) (*Oss, error) {
 	if config.AccessKeyId == "" || config.AccessKeySecret == "" || config.Bucket == "" || config.Endpoint == "" || config.Url == "" {
-		return nil, ErrOss.New("please set configuration")
+		return nil, errors.New("please set configuration")
 	}
 
 	client, err := oss.New(config.Endpoint, config.AccessKeyId, config.AccessKeySecret)
 	if err != nil {
-		return nil, ErrOss.Wrap(err)
+		return nil, err
 	}
 
 	bucketInstance, err := client.Bucket(config.Bucket)
 	if err != nil {
-		return nil, ErrOss.Wrap(err)
+		return nil, err
 	}
 
 	if config.Url == "" {
